@@ -1,5 +1,8 @@
 # Medical-Partial-Body-Pose-Estimation
 
+Our model includes two stages: patient detector and pose estimator. To use the model, please follow the below instructions.
+# First Stage: Patient Detector
+Because the pose prediction of the patient needs the proposal (bounding box) as input, so we need to run run our trained patient detector to get these bounding boxes first. Following the following steps to run the detector.
 ## Installation
 
 ### Requirements
@@ -14,19 +17,22 @@ Step 1: Install Pytroch: following the instruction in https://pytorch.org/ to in
 
 Step 2: Following the corresponding structure, clone the code, and run:
 ```
-cd ./angel_system/
+cd ./Medical-Partial-Body-Pose-Estimation/
 
 python -m pip install -e detectron2
 ```
 
 ### Download the pre-trained model
 
-Download our [model](https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwpriuFT9/view?usp=sharing) and save it to ```./weights``` folder
+Download our [model](https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwpriuFT9/view?usp=sharing) and save it to ```./detectron2/weights``` folder
 
-## Test the model
+## Run the inference of your images
+The model takes input as input, if you have video, you should first split the video as images and save it to some place.
+
+Then get the detection results by running:
 
 ```
-python test_integration.py
+python ./detectron2/demo/
 ```
 
 Please ignore the reading images algorithm in ```test_integration.py```, and directly use the ```predict``` function in it.
