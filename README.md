@@ -45,7 +45,7 @@ Our model includes two stages: Partial Body Detector and pose estimator. To use 
 <td align="center">VITbase</td>
 <td align="center">65.21</td>
 <td align="center">88.24</td>
-<td align="center"><a href="">model</a></td>
+<td align="center"><a href="https://drive.google.com/file/d/1miun_vtRODGLw0_mUOTlS3fgVwRGDzY7/view?usp=sharing">model</a></td>
 </tr>
 </tbody></table>
 
@@ -77,6 +77,7 @@ In order to make the model compatible to your syste, you may need adjust the ver
 ```
 pip install pillow==9.5
 pip install opencv-python
+pip install xtcocotoolsls
 ```
 
 ### Download the pre-trained model
@@ -124,11 +125,10 @@ In order to run the second stage, you should first install some packages.
 
 We use mmcv 1.3.9 for the experiments.
 
-```bash
+```
 git clone https://github.com/open-mmlab/mmcv.git
 cd mmcv
-git checkout v1.3.9
-MMCV_WITH_OPS=1 pip install -e .
+pip install -e . -v
 cd ..
 git clone https://github.com/Dantong88/Medical-Partial-Body-Pose-Estimation
 cd ViTPose
@@ -136,7 +136,7 @@ pip install -v -e .
 ```
 
 After install the two repos, install timm and einops, i.e.,
-```bash
+```
 pip install timm==0.4.9 einops
 ```
 
@@ -146,8 +146,6 @@ Download our Pose Estimator weights in the chart in our model zoo and save it to
 
 ## Run the inference of your images
 The model takes images and the partial body detection results as input, feel free use oue test data (the link above) and the pre-generated detection results [] to test.
-
-Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing).
 
 Then get the pose estimation results by running:
 
