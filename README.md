@@ -62,7 +62,7 @@ You will get a dict including the frame level preditions, with the structure of
 
 ```
 
-You will also get an array with a dimension of ```N * H * W * 3``` of the visualized frames with predicted bounding box in it.
+You will also get frame-level prediction is ``vis`` folder (see the expample of the following Figure) and a json file named ``bbox_detections.json`` for the sebsequent pose estimation.
 
-Notice that the keys of the dict should be equal or less than the input number of frames, including no empty predictions, but the visualized images should be the same number of the input images.
+<img src="description/bbox_pred_examples.jpg" width="300" >
 
