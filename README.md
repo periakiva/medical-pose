@@ -196,6 +196,10 @@ python /ViTPose/demo/img2video.py
 Following the steps above, you are supposed to get a demo like [demo example](https://drive.google.com/file/d/1GNr8N5-_xP-guiXnGHeyRzsFbWXfFTPQ/view?usp=sharing) .
 
 
+# Acknowledge
+We acknowledge the excellent implementation from [ViTPose](https://github.com/ViTAE-Transformer/ViTPose) and [detectron2](https://github.com/facebookresearch/detectron2).
+
+
 
 
 
