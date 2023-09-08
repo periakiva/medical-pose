@@ -18,15 +18,14 @@ def main():
     """
     parser = ArgumentParser()
     parser.add_argument('--pose_config', default='/shared/niudt/pose_estimation/vitpose/ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/medic/vitbase_patient.py', help='Config file for detection')
-    parser.add_argument('--pose_checkpoint', default='/shared/niudt/pose_estimation/vitpose/ViTPose/tools/Maydemo/all_demo/latest.pth', help='Checkpoint file')
-    # parser.add_argument('--img-root', type=str, default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo/Jan23/casuaty_vis/', help='Image root')
+    parser.add_argument('--pose_checkpoint', default='/shared/niudt/Kitware/Medical-Partial-Body-Pose-Estimation/ViTPose/weights/pose_model.pth', help='Checkpoint file')
     parser.add_argument('--img-root', type=str,
-                        default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo_videos/input/R18-10/images/',
+                        default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo_videos/input/M2-6/images/',
                         help='Image root')
     parser.add_argument(
         '--json-file',
         type=str,
-        default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo_videos/input/R18-10/bbox_detections.json',
+        default='/shared/niudt/Kitware/Medical-Partial-Body-Pose-Estimation/detectron2/demo/bbox_detection_results/bbox_detections.json',
         help='Json file containing image info.')
     parser.add_argument(
         '--show',
@@ -36,7 +35,7 @@ def main():
     parser.add_argument(
         '--out-img-root',
         type=str,
-        default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo_videos/results/R18-10/',
+        default='./test_results_m2-6/',
         help='Root of the output img file. '
         'Default not saving the visualization images.')
     parser.add_argument(
@@ -99,6 +98,7 @@ def main():
             person['bbox'] = ann['bbox']
             bbox_score = ann['bbox_score']
             bbox_label = ann['label']
+            person['label'] = bbox_label
             person_results.append(person)
 
 
