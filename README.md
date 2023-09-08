@@ -81,12 +81,12 @@ pip install opencv-python
 
 ### Download the pre-trained model
 
-Download our [model](https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwpriuFT9/view?usp=sharing) and save it to ```./detectron2/weights``` folder
+Download our Partail Body Detecor weights in the chart in our model zoo and save it to ```./detectron2/weights``` folder.
 
 ## Run the inference of your images
 The model takes input as input, if you have video, you should first split the video as images and save it to some place.
 
-Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing)
+Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing).
 
 Then get the detection results by running:
 
