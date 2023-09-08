@@ -15,7 +15,7 @@ Our model includes two stages: Partial Body Detector and pose estimator. To use 
 <th valign="bottom">Backbone</th>
 <th valign="bottom">AP@0.5:0.95</th>
 <th valign="bottom">AP@0.5AP</th>
-<th valign="bottom">download</th>
+<th valign="bottom">Download</th>
 <!-- TABLE BODY -->
 <!-- ROW: retinanet_R_50_FPN_1x -->
 <tr><td align="left">Partial Body Detector</td>
@@ -38,7 +38,7 @@ Our model includes two stages: Partial Body Detector and pose estimator. To use 
 <th valign="bottom">Backbone</th>
 <th valign="bottom">AP@0.5:0.95</th>
 <th valign="bottom">AP@0.5AP</th>
-<th valign="bottom">download</th>
+<th valign="bottom">Download</th>
 <!-- TABLE BODY -->
 <!-- ROW: retinanet_R_50_FPN_1x -->
 <tr><td align="left">Pose Estimator</td>
