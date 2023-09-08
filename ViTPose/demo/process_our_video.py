@@ -3,9 +3,9 @@
 import os
 import cv2
 
-# mp4存放的路径，路径下只有mp4
+# the dir including videos you want to process
 videos_src_path = '/shared/niudt/pose_estimation/Fabricate_dataset/our_video'
-# 保存的路径，会在路径下创建mp4文件名的文件夹保存图片
+# the save path
 videos_save_path = '/shared/niudt/pose_estimation/Fabricate_dataset/our_video_img'
 
 videos = os.listdir(videos_src_path)
@@ -23,9 +23,9 @@ for each_video in videos:
     each_video_full_path = os.path.join(videos_src_path, each_video)
 
     cap = cv2.VideoCapture(each_video_full_path)
-    # 第几帧
+
     frame_count = 1
-    # 隔着多少帧取一张
+
     frame_rate = 1
     success = True
     # 计数
