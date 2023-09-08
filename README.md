@@ -118,6 +118,77 @@ You will also get frame-level prediction is ``vis`` folder (see the expample of 
 
 
 # Second Stage: Pose Estimator
+In order to run the second stage, you should first install some packages.
+
+## Installation
+
+We use mmcv 1.3.9 for the experiments.
+
+```bash
+git clone https://github.com/open-mmlab/mmcv.git
+cd mmcv
+git checkout v1.3.9
+MMCV_WITH_OPS=1 pip install -e .
+cd ..
+git clone https://github.com/Dantong88/Medical-Partial-Body-Pose-Estimation
+cd ViTPose
+pip install -v -e .
+```
+
+After install the two repos, install timm and einops, i.e.,
+```bash
+pip install timm==0.4.9 einops
+```
+
+### Download the pre-trained model
+
+Download our Pose Estimator weights in the chart in our model zoo and save it to ```./ViTPose/weights``` folder.
+
+## Run the inference of your images
+The model takes images and the partial body detection results as input, feel free use oue test data (the link above) and the pre-generated detection results [] to test.
+
+Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing).
+
+Then get the pose estimation results by running:
+
+```
+python ./ViTPose/demo/top_down_img_demo.py --json-file your_path_of_detection_results --pose_config ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco
+/ViTPose_base_medic_casualty_256x192.py --img-root the_path_of_input_images --out-img-root the_path_to_save_the_results
+```
+
+## The results you will get by running the model
+
+You will get the pose estimation results as following structure:
+
+
+```
+├── the_path_to_save_the_results
+    │── frame1_result.jpg
+    └── frame2_result.jpg
+    └── ......
+```
+
+We give some examples of how the results will look like:
+
+<img src="description/M2-16_frame_00060.jpg" width="400" > <img src="description/M2-16_frame_00138.jpg" width="400" >
+<img src="description/M2-16_frame_01713.jpg" width="400" > <img src="description/M2-16_frame_01156.jpg" width="400" >
+
+
+# Image and Video Transfering
+
+Our Partial Body Detector and Pose Estimator both take images as input and output image-level prediction, do not fprget to change the ```path``` to the path you put/save your video.
+
+If you need to prepare the input from a video, please run:
+
+```
+python ViTPose/demo/process_our_video.py
+```
+``
+If you need to generate videos using the image-level pose prediction, please run: (please change ```line23``` and ```line29``` for the image input path and video dave path)
+
+```
+python /ViTPose/demo/img2video.py
+```
 
 
 
