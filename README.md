@@ -1,8 +1,57 @@
 # Medical-Partial-Body-Pose-Estimation
 
-Our model includes two stages: patient detector and pose estimator. To use the model, please follow the below instructions.
-# First Stage: Patient Detector
-Because the pose prediction of the patient needs the proposal (bounding box) as input, so we need to run run our trained patient detector to get these bounding boxes first. Following the following steps to run the detector.
+Our model includes two stages: Partial Body Detector and pose estimator. To use the model, please follow the below instructions.
+
+# Model Zoo
+#### Partial Body Detector:
+<!--
+./gen_html_table.py --config 'COCO-Detection/retina*50*' 'COCO-Detection/retina*101*' --name R50 R50 R101 --fields lr_sched train_speed inference_speed mem box_AP
+-->
+
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom">Name</th>
+<th valign="bottom">Backbone</th>
+<th valign="bottom">AP@0.5:0.95</th>
+<th valign="bottom">AP@0.5AP</th>
+<th valign="bottom">download</th>
+<!-- TABLE BODY -->
+<!-- ROW: retinanet_R_50_FPN_1x -->
+<tr><td align="left">Partial Body Detector</td>
+<td align="center">ResNet101</td>
+<td align="center">76.67</td>
+<td align="center">98.63</td>
+<td align="center"><a href="https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwpriuFT9/view?usp=drive_link">model</a></td>
+</tr>
+</tbody></table>
+
+#### Pose Estimator:
+<!--
+./gen_html_table.py --config 'COCO-Detection/retina*50*' 'COCO-Detection/retina*101*' --name R50 R50 R101 --fields lr_sched train_speed inference_speed mem box_AP
+-->
+
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom">Name</th>
+<th valign="bottom">Backbone</th>
+<th valign="bottom">AP@0.5:0.95</th>
+<th valign="bottom">AP@0.5AP</th>
+<th valign="bottom">download</th>
+<!-- TABLE BODY -->
+<!-- ROW: retinanet_R_50_FPN_1x -->
+<tr><td align="left">Pose Estimator</td>
+<td align="center">VITbase</td>
+<td align="center">65.21</td>
+<td align="center">88.24</td>
+<td align="center"><a href="">model</a></td>
+</tr>
+</tbody></table>
+
+
+# First Stage: Partial Body Detector
+Because the pose prediction of the patient needs the proposal (bounding box) as input, so we need to run run our trained Partial Body Detector to get these bounding boxes first. Following the following steps to run the detector.
 ## Installation
 
 ### Requirements
