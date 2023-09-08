@@ -193,11 +193,7 @@ python /ViTPose/demo/img2video.py
 
 # The Final Demonstrations You Will Get
 
-Following the steps above, you are supposed to get a demo like:
-
-<video width="320" height="240" controls>
-    <source src="/description/examples.mp4" type="video/mp4">
-</video>
+Following the steps above, you are supposed to get a demo like [demo example](https://drive.google.com/file/d/1GNr8N5-_xP-guiXnGHeyRzsFbWXfFTPQ/view?usp=sharing)
 
 
 
