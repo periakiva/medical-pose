@@ -84,7 +84,7 @@ pip install opencv-python
 Download our Partail Body Detecor weights in the chart in our model zoo and save it to ```./detectron2/weights``` folder.
 
 ## Run the inference of your images
-The model takes input as input, if you have video, you should first split the video as images and save it to some place.
+The model takes input as input, if you have video, you should first split the video as images and save it to some place (please see the the third part of this repo for trainsfering between image and video).
 
 Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing).
 
@@ -174,7 +174,7 @@ We give some examples of how the results will look like:
 <img src="description/M2-16_frame_01713.jpg" width="400" > <img src="description/M2-16_frame_01156.jpg" width="400" >
 
 
-# Image and Video Transfering
+# Image and Video Transfering (Optional)
 
 Our Partial Body Detector and Pose Estimator both take images as input and output image-level prediction, do not fprget to change the ```path``` to the path you put/save your video.
 
@@ -183,12 +183,21 @@ If you need to prepare the input from a video, please run:
 ```
 python ViTPose/demo/process_our_video.py
 ```
-``
+
 If you need to generate videos using the image-level pose prediction, please run: (please change ```line23``` and ```line29``` for the image input path and video dave path)
 
 ```
 python /ViTPose/demo/img2video.py
 ```
+
+
+# The Final Demonstrations You Will Get
+
+Following the steps above, you are supposed to get a demo like:
+
+<video width="320" height="240" controls>
+    <source src="/description/examples.mp4" type="video/mp4">
+</video>
 
 
 
