@@ -9,7 +9,6 @@ import time
 import warnings
 import cv2
 import tqdm
-os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 from detectron2.config import get_cfg
 from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
@@ -41,7 +40,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description="Detectron2 demo for builtin configs")
     parser.add_argument(
         "--config-file",
-        default="/shared/niudt/detectron2_ori/detectron2/configs/LVISv1-InstanceSegmentation/medic_pose.yaml",
+        default="/shared/niudt/Kitware/Medical-Partial-Body-Pose-Estimation/detectron2/configs/medic_pose/medic_pose.yaml",
         metavar="FILE",
         help="path to config file",
     )
@@ -54,16 +53,13 @@ def get_parser():
         nargs="+",
         help="A list of space separated input images; "
         "or a single glob pattern such as 'directory/*.jpg'"
-        , default= ['/shared/zhaobin/100_extreme_pose/selected_youtube/*.jpg']
-        # ,default=['/shared/niudt/detectron2/images/WechatIMG34.jpeg']
+        , default= ['/shared/niudt/DATASET/Medical/Maydemo/2023-4-25/selected_videos/new/M2-16/*.jpg'] # please change here to the path where you put the images
     )
     parser.add_argument(
         "--output",
         help="A file or directory to save output visualizations. "
         "If not given, will show output in an OpenCV window."
-        #, default='/shared/niudt/detectron2/test_results/kitchen305.jpg'
-        # , default='/shared/niudt/detectron2/test_results/text.mp4'
-        , default='/shared/niudt/DATASET/Medical/Maydemo/2023-4-25/selected_videos/new/bbox_detections/bmw'
+        , default='./bbox_detection_results'
     )
 
     parser.add_argument(
@@ -108,9 +104,6 @@ if __name__ == "__main__":
 
     cfg = setup_cfg(args)
 
-    det_res_save_root = os.path.join(args.output, 'bbox_detections.json')
-    args.output = os.path.join(args.output, 'vis')
-    os.makedirs(args.output, exist_ok=True)
 
     demo = VisualizationDemo(cfg)
 
@@ -204,17 +197,11 @@ if __name__ == "__main__":
 
 
 
-
-        # if os.path.isdir(args.output):
-        #     assert os.path.isdir(args.output), args.output
-        #     out_filename = os.path.join(args.output, os.path.basename(path))
-        # else:
-        #     assert len(args.input) == 1, "Please specify a directory with args.output"
-        #     out_filename = args.output
-        out_filename = os.path.join(args.output, os.path.basename(path))
+        vis_save_path = os.path.join(args.output, 'vis_results')
+        os.makedirs(vis_save_path, exist_ok=True)
+        out_filename = os.path.join(vis_save_path, os.path.basename(path))
         visualized_output.save(out_filename)
 
-    save_root = '/shared/niudt/DATASET/Medical/Maydemo/2023-4-25/all_images_ours_infer/bmw_bbox_detections.json'
-    with open(det_res_save_root, 'w') as fp:
+    det_save_root = os.path.join(args.output, 'bbox_detections.json')
+    with open(det_save_root, 'w') as fp:
         json.dump(json_file, fp)
-
