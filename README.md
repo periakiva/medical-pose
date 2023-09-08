@@ -46,27 +46,19 @@ python ./detectron2/demo/bbox_detection_medic.py --config-file configs/medic_pos
 ```
 
 
-
-
 ## The results you will get by running the model
 
 You will get a dict including the frame level preditions, with the structure of
 
 
 ```
-├── frame_id
-│   ├── object1
-│   │   ├── class
-│   │   └── confidence score
-|   |   └── bbox
-│   ├── object2
-│   │   ├── ......
-│   │   └── ......
-│   ├── object3
-│   │   ├── ......
-│   │   ├── ......
-│   ├   └── ......
-│── frame_id
+├── demo
+│   ├── bbox_detection_results
+│   │   ├── vis
+│   │     └── frame1_result.jpg
+|   |     └── frame2_result.jpg
+|   |     └── ......
+│   ├── bbox_detections.json
 
 ```
 
