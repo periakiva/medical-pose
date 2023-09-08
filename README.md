@@ -22,6 +22,14 @@ cd ./Medical-Partial-Body-Pose-Estimation/
 python -m pip install -e detectron2
 ```
 
+### Install other dependencies
+In order to make the model compatible to your syste, you may need adjust the version of some pachages:
+
+```
+pip install pillow==9.5
+pip install opencv-python
+```
+
 ### Download the pre-trained model
 
 Download our [model](https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwpriuFT9/view?usp=sharing) and save it to ```./detectron2/weights``` folder
@@ -29,13 +37,15 @@ Download our [model](https://drive.google.com/file/d/1OHAr31n41keDTJygDmFfOgsXwp
 ## Run the inference of your images
 The model takes input as input, if you have video, you should first split the video as images and save it to some place.
 
+Feel free to use our prepared data for test. You can download them at [test_data](https://drive.google.com/file/d/1mOwxB5doD-zhMsQkKte2Gt8V40oxR7PN/view?usp=sharing)
+
 Then get the detection results by running:
 
 ```
-python ./detectron2/demo/
+python ./detectron2/demo/bbox_detection_medic.py --config-file configs/medic_pose/medic_pose.yaml --input you_path/*.jpg
 ```
 
-Please ignore the reading images algorithm in ```test_integration.py```, and directly use the ```predict``` function in it.
+
 
 
 ## The results you will get by running the model
