@@ -184,7 +184,7 @@ If you need to prepare the input from a video, please run:
 python ViTPose/demo/process_our_video.py
 ```
 
-If you need to generate videos using the image-level pose prediction, please run: (please change ```line23``` and ```line29``` for the image input path and video dave path)
+If you need to generate videos using the image-level pose prediction, please run: (change ```line23``` and ```line29``` for the image input path and video save path)
 
 ```
 python /ViTPose/demo/img2video.py
