@@ -168,8 +168,8 @@ You will get the pose estimation results as following structure:
 
 We give some examples of how the results will look like:
 
-<img src="description/M2-16_frame_00060.jpg" width="400" > <img src="description/M2-16_frame_00138.jpg" width="400" >
-<img src="description/M2-16_frame_01713.jpg" width="400" > <img src="description/M2-16_frame_01156.jpg" width="400" >
+<img src="description/M2-16_frame_00018.jpg" width="400" > <img src="description/M2-16_frame_00029.jpg" width="400" >
+<img src="description/M2-16_frame_00201.jpg" width="400" > <img src="description/M2-16_frame_01017.jpg" width="400" >
 
 
 # Image and Video Transfering (Optional)
