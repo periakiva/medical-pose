@@ -64,6 +64,6 @@ You will get a dict including the frame level preditions, with the structure of
 
 You will also get frame-level prediction is ``vis`` folder (see the expample of the following Figure) and a json file named ``bbox_detections.json`` for the sebsequent pose estimation.
 
-<img src="description/M2-16_frame_00060.jpg" width="300" > <img src="description/M2-16_frame_00138.jpg" width="300" >
-<img src="description/M2-16_frame_01713.jpg" width="300" > <img src="description/M2-16_frame_01156.jpg" width="300" >
+<img src="description/M2-16_frame_00060.jpg" width="400" > <img src="description/M2-16_frame_00138.jpg" width="400" >
+<img src="description/M2-16_frame_01713.jpg" width="400" > <img src="description/M2-16_frame_01156.jpg" width="400" >
 
