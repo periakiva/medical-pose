@@ -145,7 +145,7 @@ pip install timm==0.4.9 einops
 Download our Pose Estimator weights in the chart in our model zoo and save it to ```./ViTPose/weights``` folder.
 
 ## Run the inference of your images
-The model takes images and the partial body detection results as input, feel free use oue test data (the link above) and the pre-generated detection results [] to test.
+The model takes images and the partial body detection results as input, feel free use oue test data (the link above) and the pre-generated detection results [bbox_detections.json](https://drive.google.com/file/d/1el5g7nmYwlZhR598nActSbWkrw1PxfPN/view?usp=sharing) to test.
 
 Then get the pose estimation results by running:
 
