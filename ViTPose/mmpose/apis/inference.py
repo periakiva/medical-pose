@@ -32,6 +32,7 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     """
     if isinstance(config, str):
         config = mmcv.Config.fromfile(config)
+        print(f"config: {config}")
     elif not isinstance(config, mmcv.Config):
         raise TypeError('config must be a filename or Config object, '
                         f'but got {type(config)}')
@@ -572,7 +573,8 @@ def vis_pose_result(model,
         show (bool):  Whether to show the image. Default True.
         out_file (str|None): The filename of the output visualization image.
     """
-
+    # print(f"img: {img}")
+    # print(f"outfile: {out_file}")
     # get dataset info
     if (dataset_info is None and hasattr(model, 'cfg')
             and 'dataset_info' in model.cfg):

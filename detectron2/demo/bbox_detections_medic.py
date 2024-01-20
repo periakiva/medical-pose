@@ -1,6 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import argparse
 import glob
+from glob import glob
 import multiprocessing as mp
 import numpy as np
 import os
@@ -16,9 +17,35 @@ import json
 
 from predictor import VisualizationDemo
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # constants
 WINDOW_NAME = "COCO detections"
 
+def dictionary_contents(path: str, types: list, recursive: bool = False) -> list:
+    """
+    Extract files of specified types from directories, optionally recursively.
+
+    Parameters:
+        path (str): Root directory path.
+        types (list): List of file types (extensions) to be extracted.
+        recursive (bool, optional): Search for files in subsequent directories if True. Default is False.
+
+    Returns:
+        list: List of file paths with full paths.
+    """
+    files = []
+    if recursive:
+        path = path + "/**/*"
+    for type in types:
+        if recursive:
+            for x in glob(path + type, recursive=True):
+                files.append(os.path.join(path, x))
+        else:
+            for x in glob(path + type):
+                files.append(os.path.join(path, x))
+    return files
 
 def setup_cfg(args):
     # load config from file and command-line arguments
@@ -35,6 +62,10 @@ def setup_cfg(args):
     cfg.freeze()
     return cfg
 
+
+"""
+python detectron2/demo/bbox_detections_medic.py --config detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs/M2-65/*.jpg
+"""
 
 def get_parser():
     parser = argparse.ArgumentParser(description="Detectron2 demo for builtin configs")
@@ -139,11 +170,12 @@ if __name__ == "__main__":
     ann_num = 0
 
 
-    if len(args.input) == 1:
-        args.input = glob.glob(os.path.expanduser(args.input[0]))
-        assert args.input, "The input path(s) was not found"
+    # if len(args.input) == 1:
+    #     args.input = glob.glob(os.path.expanduser(args.input[0]))
+    #     assert args.input, "The input path(s) was not found"
+    paths = dictionary_contents(args.input[0], types=['*.JPG', '*.jpg', '*.JPEG', '*.jpeg'], recursive=True)
     num_img = 0
-    for path in tqdm.tqdm(args.input, disable=not args.output):
+    for path in tqdm.tqdm(paths, disable=not args.output):
         # use PIL, to be consistent with evaluation
         img = read_image(path, format="BGR")
         start_time = time.time()
@@ -165,14 +197,18 @@ if __name__ == "__main__":
 
         boxes = boxes.tensor.detach().numpy()
         scores = scores.numpy()
-
+        
+        file_name = "_".join(path.split('/')[-2:])
+        print(f"file name: {file_name}")
+        
         if boxes is not None:
             num_img = num_img + 1
 
 
             # add images info
             current_img = {}
-            current_img['file_name'] = path.split('/')[-1]
+            # current_img['file_name'] = path.split('/')[-1]
+            current_img['file_name'] = file_name
             current_img['id'] = num_img
             current_img['height'] = 720
             current_img['width'] = 1280
@@ -199,9 +235,17 @@ if __name__ == "__main__":
 
         vis_save_path = os.path.join(args.output, 'vis_results')
         os.makedirs(vis_save_path, exist_ok=True)
-        out_filename = os.path.join(vis_save_path, os.path.basename(path))
-        visualized_output.save(out_filename)
+        # out_filename = os.path.join(vis_save_path, os.path.basename(path))
+        out_filename = f"{vis_save_path}/{file_name}"
+        # print(f'vis_save_path: {vis_save_path}')
+        # print(f'out_filename: {out_filename}')
+        if num_img % 30 == 1:
+            visualized_output.save(out_filename)
 
     det_save_root = os.path.join(args.output, 'bbox_detections.json')
     with open(det_save_root, 'w') as fp:
         json.dump(json_file, fp)
+
+"""
+python detectron2/demo/bbox_detections_medic.py --config-file detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs
+"""

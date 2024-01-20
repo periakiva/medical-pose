@@ -1,0 +1,4 @@
+
+python detectron2/demo/bbox_detections_medic.py --config-file detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs
+
+python ./ViTPose/demo/top_down_img_demo.py --json-file /home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/bbox_detections.json --pose_config ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/ViTPose_base_medic_casualty_256x192.py --img-root /data/datasets/ptg/m2_tourniquet/imgs --out-img-root /data/datasets/ptg/m2_tourniquet/output_imgs/pose --out-json-file /home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/ViTPose/results/pose_keypoints.json

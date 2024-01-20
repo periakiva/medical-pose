@@ -1,6 +1,6 @@
 _base_ = [
     '../../../../_base_/default_runtime.py',
-    '../../../../_base_/datasets/medic_user.py'
+    '../../../../_base_/datasets/customize_ours/medic_user.py'
 ]
 evaluation = dict(interval=210, metric='mAP', save_best='AP')
 
@@ -87,7 +87,7 @@ data_cfg = dict(
     vis_thr=0.2,
     use_gt_bbox=False,
     det_bbox_thr=0.0,
-    bbox_file='/shared/niudt/DATASET/Medical/final_version_coco_jan21/bbox_detections_results/user.json',
+    bbox_file='/home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/bbox_detections.json',
 )
 
 train_pipeline = [

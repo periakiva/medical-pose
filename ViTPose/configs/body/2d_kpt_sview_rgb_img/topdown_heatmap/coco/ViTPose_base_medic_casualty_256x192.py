@@ -1,6 +1,6 @@
 _base_ = [
     '../../../../_base_/default_runtime.py',
-    '../../../../_base_/datasets/medic_casualty.py'
+    '../../../../_base_/datasets/customize_ours/medic_patient.py'
 ]
 evaluation = dict(interval=210, metric='mAP', save_best='AP')
 
@@ -30,13 +30,13 @@ lr_config = dict(
 total_epochs = 210
 target_type = 'GaussianHeatmap'
 channel_cfg = dict(
-    num_output_channels=21,
-    dataset_joints=21,
+    num_output_channels=22,
+    dataset_joints=22,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     ],
     inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
     ])
 
 # model settings
@@ -87,7 +87,8 @@ data_cfg = dict(
     vis_thr=0.2,
     use_gt_bbox=False,
     det_bbox_thr=0.0,
-    bbox_file='/shared/niudt/DATASET/Medical/final_version_coco_jan21/bbox_detections_results/casualty.json',
+    # bbox_file='/shared/niudt/DATASET/Medical/final_version_coco_jan21/bbox_detections_results/casualty.json',
+    bbox_file='/home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/bbox_detections.json',
 )
 
 train_pipeline = [
