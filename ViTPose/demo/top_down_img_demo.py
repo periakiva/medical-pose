@@ -54,13 +54,13 @@ def main():
     parser.add_argument(
         '--json-file',
         type=str,
-        default='/home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/bbox_detections.json',
+        default='/home/local/KHQ/peri.akiva/projects/medical-pose/bbox_detection_results/bbox_detections.json',
         help='Json file containing image info.')
     
     parser.add_argument(
         '--out-json-file',
         type=str,
-        default='/home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/pose_keypoints.json',
+        default='/home/local/KHQ/peri.akiva/projects/medical-pose/bbox_detection_results/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets_with_pose.mscoco.json',
         help='Json file containing image info.')
     
     parser.add_argument(

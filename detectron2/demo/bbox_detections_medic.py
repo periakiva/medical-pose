@@ -14,6 +14,7 @@ from detectron2.config import get_cfg
 from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
 import json
+from xtcocotools.coco import COCO
 
 from predictor import VisualizationDemo
 
@@ -75,6 +76,14 @@ def get_parser():
         metavar="FILE",
         help="path to config file",
     )
+    
+    parser.add_argument(
+        "--coco-file",
+        default="/data/PTG/medical/object_anns/old_bbn/M2_Tourniquet/results/m2_with_lab_cleaned_fixed_data_with_steps_RESULTS/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_copy.mscoco.json",
+        metavar="FILE",
+        help="path to coco file",
+    )
+    
     parser.add_argument("--webcam", action="store_true", help="Take inputs from webcam.")
     parser.add_argument("--video-input", help="Path to video file."
                         # , default='/shared/niudt/detectron2/images/Videos/k2/4.MP4'
@@ -138,48 +147,72 @@ if __name__ == "__main__":
 
     demo = VisualizationDemo(cfg)
 
-    json_file = {}
-    json_file['images'] = []
-    json_file['annotations'] = []
-    json_file['categories']  = []
+    # json_file = {}
+    # json_file['images'] = []
+    # json_file['annotations'] = []
+    # json_file['categories']  = []
 
-    # get new categorie
-    temp_bbox = {}
-    temp_bbox['id'] = 1
-    temp_bbox['name'] = 'patient'
-    temp_bbox['instances_count'] = 0
-    temp_bbox['def'] = ''
-    temp_bbox['synonyms'] = ['patient']
-    temp_bbox['image_count'] = 0
-    temp_bbox['frequency'] = ''
-    temp_bbox['synset'] = ''
+    # # get new categorie
+    # temp_bbox = {}
+    # temp_bbox['id'] = 1
+    # temp_bbox['name'] = 'patient'
+    # temp_bbox['instances_count'] = 0
+    # temp_bbox['def'] = ''
+    # temp_bbox['synonyms'] = ['patient']
+    # temp_bbox['image_count'] = 0
+    # temp_bbox['frequency'] = ''
+    # temp_bbox['synset'] = ''
 
-    json_file['categories'].append(temp_bbox)
+    # json_file['categories'].append(temp_bbox)
 
-    temp_bbox = {}
-    temp_bbox['id'] = 2
-    temp_bbox['name'] = 'user'
-    temp_bbox['instances_count'] = 0
-    temp_bbox['def'] = ''
-    temp_bbox['synonyms'] = ['user']
-    temp_bbox['image_count'] = 0
-    temp_bbox['frequency'] = ''
-    temp_bbox['synset'] = ''
+    # temp_bbox = {}
+    # temp_bbox['id'] = 2
+    # temp_bbox['name'] = 'user'
+    # temp_bbox['instances_count'] = 0
+    # temp_bbox['def'] = ''
+    # temp_bbox['synonyms'] = ['user']
+    # temp_bbox['image_count'] = 0
+    # temp_bbox['frequency'] = ''
+    # temp_bbox['synset'] = ''
 
-    json_file['categories'].append(temp_bbox)
-    ann_num = 0
+    # json_file['categories'].append(temp_bbox)
 
+    coco = COCO(args.coco_file)
+    patient_cat = {'id':41, 'name': 'patient'}
+    user_cat = {'id':42, 'name': 'user'}
+    coco.cats[patient_cat['id']] = patient_cat
+    coco.cats[user_cat['id']] = user_cat
+    
+    anns_ids = list(coco.anns.keys())
+    # print(anns_ids)
+    
+    # exit()
+    
 
+    
+    # print(f"coco: {coco.imgs.keys()}")
+    # print(f"coco: {coco.cats}")
+    # print(f"coco: {coco.imgs}")
+    # exit()
     # if len(args.input) == 1:
     #     args.input = glob.glob(os.path.expanduser(args.input[0]))
     #     assert args.input, "The input path(s) was not found"
-    paths = dictionary_contents(args.input[0], types=['*.JPG', '*.jpg', '*.JPEG', '*.jpeg'], recursive=True)
+    # paths = dictionary_contents(args.input[0], types=['*.JPG', '*.jpg', '*.JPEG', '*.jpeg'], recursive=True)
+    
+    ann_id = anns_ids[-1]+1
     num_img = 0
-    for path in tqdm.tqdm(paths, disable=not args.output):
+    pbar = tqdm.tqdm(coco.imgs.items())
+    for img_id, img_dict in pbar:
         # use PIL, to be consistent with evaluation
+        # print(img_id)
+        # print(value)
+        # exit()
+        
+        path = img_dict['file_name']
         img = read_image(path, format="BGR")
         start_time = time.time()
         predictions, visualized_output = demo.run_on_image(img)
+        
         logger.info(
             "{}: {} in {:.2f}s".format(
                 path,
@@ -199,37 +232,37 @@ if __name__ == "__main__":
         scores = scores.numpy()
         
         file_name = "_".join(path.split('/')[-2:])
-        print(f"file name: {file_name}")
+        # print(f"file name: {file_name}")
         
         if boxes is not None:
-            num_img = num_img + 1
+            # num_img = num_img + 1
 
 
             # add images info
-            current_img = {}
-            # current_img['file_name'] = path.split('/')[-1]
-            current_img['file_name'] = file_name
-            current_img['id'] = num_img
-            current_img['height'] = 720
-            current_img['width'] = 1280
-            json_file['images'].append(current_img)
+            # current_img = {}
+            # # current_img['file_name'] = path.split('/')[-1]
+            # current_img['file_name'] = file_name
+            # current_img['id'] = num_img
+            # current_img['height'] = 720
+            # current_img['width'] = 1280
+            # json_file['images'].append(current_img)
 
             for box_id, _bbox in enumerate(boxes):
 
 
                 # add annotations
                 current_ann = {}
-                current_ann['id'] = ann_num
-                current_ann['image_id'] = current_img['id']
+                current_ann['id'] = ann_id
+                current_ann['image_id'] = img_id
                 current_ann['bbox'] = np.asarray(_bbox).tolist()#_bbox
-                current_ann['category_id'] = classes[box_id] + 1
+                current_ann['category_id'] = 41
                 current_ann['label'] = 'patient'
                 current_ann['bbox_score'] = str(round(scores[box_id] * 100,2)) + '%'
 
-                if current_ann['category_id'] == 2:
-                    continue
-                ann_num = ann_num + 1
-                json_file['annotations'].append(current_ann)
+                # if current_ann['category_id'] == 2:
+                #     continue
+                coco.anns[ann_id] = current_ann
+                ann_id += 1
 
 
 
@@ -242,9 +275,11 @@ if __name__ == "__main__":
         if num_img % 30 == 1:
             visualized_output.save(out_filename)
 
-    det_save_root = os.path.join(args.output, 'bbox_detections.json')
+    det_save_root = f"{args.output}/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets.mscoco.json"
+    
+    # det_save_root = os.path.join(args.output, 'bbox_detections.json')
     with open(det_save_root, 'w') as fp:
-        json.dump(json_file, fp)
+        json.dump(coco, fp)
 
 """
 python detectron2/demo/bbox_detections_medic.py --config-file detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs

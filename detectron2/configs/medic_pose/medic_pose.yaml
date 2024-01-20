@@ -1,6 +1,6 @@
 _BASE_: "../Base-RCNN-FPN.yaml"
 MODEL:
-  WEIGHTS: "/data/models/ptg/model_final.pth" # please change here to the path where you put the weights
+  WEIGHTS: "/data/users/peri.akiva/models/ptg/model_final.pth" # please change here to the path where you put the weights
   MASK_ON: False
   RESNETS:
     DEPTH: 101
