@@ -47,7 +47,7 @@ def main():
     """
     parser = ArgumentParser()
     parser.add_argument('--pose_config', default='/shared/niudt/pose_estimation/vitpose/ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/medic/vitbase_patient.py', help='Config file for detection')
-    parser.add_argument('--pose_checkpoint', default='/home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/ViTPose/weights/pose_model.pth', help='Checkpoint file')
+    parser.add_argument('--pose_checkpoint', default='/home/local/KHQ/peri.akiva/projects/medical-pose/ViTPose/weights/pose_model.pth', help='Checkpoint file')
     parser.add_argument('--img-root', type=str,
                         default='/shared/niudt/pose_estimation/vitpose/ViTPose/demo_videos/input/M2-6/images/',
                         help='Image root')
@@ -95,6 +95,7 @@ def main():
 
     coco = COCO(args.json_file)
 
+    print(f"coco annotations: {len(coco.anns)}")
     # build the pose model from a config file and a checkpoint file
     # print(f"pose config: {args.pose_config}")
     pose_model = init_pose_model(
@@ -110,15 +111,15 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    paths = dictionary_contents(args.img_root, types=['*.jpg'], recursive=True)
-    imageid_to_path = {}
-    for path in tqdm.tqdm(paths, total=len(paths)):
-        # print(f"path {path}")
-        image_id = "_".join(path.split('/')[-2:])
-        # print(f"image_id {image_id}")
-        if image_id in imageid_to_path.keys():
-            print(f"image_id {image_id} already in dictionary")
-        imageid_to_path[image_id] = path
+    # paths = dictionary_contents(args.img_root, types=['*.jpg'], recursive=True)
+    # imageid_to_path = {}
+    # for path in tqdm.tqdm(paths, total=len(paths)):
+    #     # print(f"path {path}")
+    #     image_id = "_".join(path.split('/')[-2:])
+    #     # print(f"image_id {image_id}")
+    #     if image_id in imageid_to_path.keys():
+    #         print(f"image_id {image_id} already in dictionary")
+    #     imageid_to_path[image_id] = path
     
     img_keys = list(coco.imgs.keys())
     # print(f"img_keys: {img_keys[:10]}")
@@ -129,16 +130,20 @@ def main():
     output_layer_names = None
 
     # process each image
-    for i in tqdm.tqdm(range(len(img_keys)), total=len(img_keys)):
+    pbar = tqdm.tqdm(coco.imgs.items())
+
+    for image_id, img_dict  in pbar:
         
         # if i > 40:
         #     continue
         
         # get bounding box annotations
-        image_id = img_keys[i]
+        path = img_dict['file_name']
+        # image_id = img_keys[i]
         image = coco.loadImgs(image_id)[0]
         # image_name = os.path.join(args.img_root, image['file_name'])
-        image_name = imageid_to_path[image['file_name']]
+        # image_name = imageid_to_path[image['file_name']]
+        image_name = path
         # print(image_name)
         # print(f"filename: {image['file_name']}")
         ann_ids = coco.getAnnIds(image_id)
@@ -146,12 +151,16 @@ def main():
         # print(f"image id: {image_id}, image_name: {image_name}")
         # make person bounding boxes
         person_results = []
+        # print(f"annotations for image: {len(ann_ids)}")
         for ann_id in ann_ids:
             person = {}
             ann = coco.anns[ann_id]
+            if ann['category_id'] != 41:
+                continue
+            print(f"ann: {ann}")
             # bbox format is 'xywh'
             person['bbox'] = ann['bbox']
-            bbox_score = ann['bbox_score']
+            # bbox_score = ann['bbox_score']
             bbox_label = ann['label']
             person['label'] = bbox_label
             person_results.append(person)
@@ -216,7 +225,7 @@ def main():
 if __name__ == '__main__':
     
     """
-    python ./ViTPose/demo/top_down_img_demo.py --json-file /home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/bbox_detection_results/bbox_detections.json --pose_config ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/ViTPose_base_medic_casualty_256x192.py --img-root /data/datasets/ptg/m2_tourniquet/imgs --out-img-root /data/datasets/ptg/m2_tourniquet/output_imgs/pose --out-json-file /home/local/KHQ/peri.akiva/projects/Medical-Partial-Body-Pose-Estimation/ViTPose/results/pose_keypoints.json
+    python ./ViTPose/demo/top_down_img_demo.py --json-file /home/local/KHQ/peri.akiva/projects/medical-pose/bbox_detection_results/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets.mscoco.json --pose_config ViTPose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/ViTPose_base_medic_casualty_256x192.py --out-img-root /data/datasets/ptg/m2_tourniquet/output_imgs/pose --out-json-file /home/local/KHQ/peri.akiva/projects/medical-pose/ViTPose/results/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets_with_pose.mscoco.json
 
 
     """

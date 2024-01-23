@@ -79,7 +79,7 @@ def get_parser():
     
     parser.add_argument(
         "--coco-file",
-        default="/data/PTG/medical/object_anns/old_bbn/M2_Tourniquet/results/m2_with_lab_cleaned_fixed_data_with_steps_RESULTS/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_copy.mscoco.json",
+        default="/home/local/KHQ/peri.akiva/projects/medical-pose/bbn_model_m2_v9_train_activity_obj_results.mscoco.json",
         metavar="FILE",
         help="path to coco file",
     )
@@ -178,8 +178,8 @@ if __name__ == "__main__":
     # json_file['categories'].append(temp_bbox)
 
     coco = COCO(args.coco_file)
-    patient_cat = {'id':41, 'name': 'patient'}
-    user_cat = {'id':42, 'name': 'user'}
+    patient_cat = {'id':12, 'name': 'patient'}
+    user_cat = {'id':13, 'name': 'user'}
     coco.cats[patient_cat['id']] = patient_cat
     coco.cats[user_cat['id']] = user_cat
     
@@ -188,17 +188,24 @@ if __name__ == "__main__":
     
     # exit()
     
-
+    print(coco.dataset.keys())
+    # print(f"num of cats: {coco.cats}")
+    # print(f"num of annotations: {len(coco.anns)}, {type(coco.anns)}")
     
     # print(f"coco: {coco.imgs.keys()}")
-    # print(f"coco: {coco.cats}")
-    # print(f"coco: {coco.imgs}")
+    # print(f"coco cats: {coco.cats}, {type(coco.cats)}")
+    # print(f"coco images: {type(coco.imgs)}")
+    
+    print(f"coco dataset anns: {len(coco.dataset['annotations'])}, {type(coco.dataset['annotations'])}")
+    
+    # print(f"coco info: {coco.dataset['videos']}, {type(coco.dataset['videos'])}")
     # exit()
     # if len(args.input) == 1:
     #     args.input = glob.glob(os.path.expanduser(args.input[0]))
     #     assert args.input, "The input path(s) was not found"
     # paths = dictionary_contents(args.input[0], types=['*.JPG', '*.jpg', '*.JPEG', '*.jpeg'], recursive=True)
-    
+    # print(f"coco annotations: {len(coco.anns)}")
+
     ann_id = anns_ids[-1]+1
     num_img = 0
     pbar = tqdm.tqdm(coco.imgs.items())
@@ -255,17 +262,18 @@ if __name__ == "__main__":
                 current_ann['id'] = ann_id
                 current_ann['image_id'] = img_id
                 current_ann['bbox'] = np.asarray(_bbox).tolist()#_bbox
-                current_ann['category_id'] = 41
+                current_ann['category_id'] = 12
                 current_ann['label'] = 'patient'
                 current_ann['bbox_score'] = str(round(scores[box_id] * 100,2)) + '%'
 
                 # if current_ann['category_id'] == 2:
                 #     continue
+                coco.dataset['annotations'].append(current_ann)
                 coco.anns[ann_id] = current_ann
                 ann_id += 1
 
-
-
+        pbar.set_description(f"Anns dataset: {len(coco.dataset['annotations'])}, coco.ann: {len(coco.anns)}")
+        # pbar.set_description(){len(coco.dataset['annotations'])}
         vis_save_path = os.path.join(args.output, 'vis_results')
         os.makedirs(vis_save_path, exist_ok=True)
         # out_filename = os.path.join(vis_save_path, os.path.basename(path))
@@ -277,9 +285,19 @@ if __name__ == "__main__":
 
     det_save_root = f"{args.output}/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets.mscoco.json"
     
+    # dict_keys(['info', 'licenses', 'categories', 'videos', 'images', 'annotations'])
+
+    # json_file = {}
+    # json_file['info'] = coco.dataset['info']
+    # json_file['categories'] = coco.dataset['categories']
+    # json_file['licenses'] = coco.dataset['licenses']
+    # json_file['video'] = coco.dataset['licenses']
+    # json_file['images'] = coco.dataset['licenses']
+    # json_file['annotations'] = coco.dataset['licenses']
+    print(f"after coco dataset anns: {len(coco.dataset['annotations'])}, {type(coco.dataset['annotations'])}")
     # det_save_root = os.path.join(args.output, 'bbox_detections.json')
     with open(det_save_root, 'w') as fp:
-        json.dump(coco, fp)
+        json.dump(coco.dataset, fp)
 
 """
 python detectron2/demo/bbox_detections_medic.py --config-file detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs
