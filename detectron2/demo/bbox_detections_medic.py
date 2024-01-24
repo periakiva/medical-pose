@@ -15,6 +15,8 @@ from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
 import json
 from xtcocotools.coco import COCO
+import kwcoco
+
 
 from predictor import VisualizationDemo
 
@@ -176,12 +178,14 @@ if __name__ == "__main__":
     # temp_bbox['synset'] = ''
 
     # json_file['categories'].append(temp_bbox)
-
-    coco = COCO(args.coco_file)
-    patient_cat = {'id':12, 'name': 'patient'}
-    user_cat = {'id':13, 'name': 'user'}
-    coco.cats[patient_cat['id']] = patient_cat
-    coco.cats[user_cat['id']] = user_cat
+    coco = kwcoco.CocoDataset(args.coco_file)
+    # coco = kwcoco.COCO(args.coco_file)
+    # patient_cat = {'id':12, 'name': 'patient'}
+    # user_cat = {'id':13, 'name': 'user'}
+    patient_cid = coco.add_category('patient')
+    user_cid = coco.add_category('user')
+    # coco.cats[patient_cat['id']] = patient_cat
+    # coco.cats[user_cat['id']] = user_cat
     
     anns_ids = list(coco.anns.keys())
     # print(anns_ids)
@@ -259,18 +263,19 @@ if __name__ == "__main__":
 
                 # add annotations
                 current_ann = {}
-                current_ann['id'] = ann_id
+                # current_ann['id'] = ann_id
                 current_ann['image_id'] = img_id
                 current_ann['bbox'] = np.asarray(_bbox).tolist()#_bbox
-                current_ann['category_id'] = 12
+                current_ann['category_id'] = patient_cid
                 current_ann['label'] = 'patient'
                 current_ann['bbox_score'] = str(round(scores[box_id] * 100,2)) + '%'
 
                 # if current_ann['category_id'] == 2:
                 #     continue
-                coco.dataset['annotations'].append(current_ann)
-                coco.anns[ann_id] = current_ann
-                ann_id += 1
+                # coco.dataset['annotations'].append(current_ann)
+                # coco.anns[ann_id] = current_ann
+                coco.add_annotation(**current_ann)
+                # ann_id += 1
 
         pbar.set_description(f"Anns dataset: {len(coco.dataset['annotations'])}, coco.ann: {len(coco.anns)}")
         # pbar.set_description(){len(coco.dataset['annotations'])}
@@ -283,7 +288,7 @@ if __name__ == "__main__":
         if num_img % 30 == 1:
             visualized_output.save(out_filename)
 
-    det_save_root = f"{args.output}/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets.mscoco.json"
+    coco.save_path = f"{args.output}/RESULTS_m2_with_lab_cleaned_fixed_data_with_steps_results_train_activity_with_patient_dets.mscoco.json"
     
     # dict_keys(['info', 'licenses', 'categories', 'videos', 'images', 'annotations'])
 
@@ -296,8 +301,10 @@ if __name__ == "__main__":
     # json_file['annotations'] = coco.dataset['licenses']
     print(f"after coco dataset anns: {len(coco.dataset['annotations'])}, {type(coco.dataset['annotations'])}")
     # det_save_root = os.path.join(args.output, 'bbox_detections.json')
-    with open(det_save_root, 'w') as fp:
-        json.dump(coco.dataset, fp)
+    # with open(det_save_root, 'w') as fp:
+    #     json.dump(coco.dataset, fp)
+    coco.dump(coco.save_path, newlines=True)
+
 
 """
 python detectron2/demo/bbox_detections_medic.py --config-file detectron2/configs/medic_pose/medic_pose.yaml --input /data/datasets/ptg/m2_tourniquet/imgs

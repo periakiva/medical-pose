@@ -8,10 +8,10 @@ import tqdm
 import json
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
-
+import kwcoco
 # from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
 #                          vis_pose_result)
-
+import numpy as np
 from mmpose.datasets import DatasetInfo
 
 def dictionary_contents(path: str, types: list, recursive: bool = False) -> list:
@@ -93,7 +93,8 @@ def main():
 
     assert args.show or (args.out_img_root != '')
 
-    coco = COCO(args.json_file)
+    # coco = COCO(args.json_file)
+    coco = kwcoco.CocoDataset(args.json_file)
 
     print(f"coco annotations: {len(coco.anns)}")
     # build the pose model from a config file and a checkpoint file
@@ -131,8 +132,8 @@ def main():
 
     # process each image
     pbar = tqdm.tqdm(coco.imgs.items())
-
-    for image_id, img_dict  in pbar:
+    original_num_annots = len(coco.anns)
+    for image_id, img_dict in pbar:
         
         # if i > 40:
         #     continue
@@ -140,13 +141,16 @@ def main():
         # get bounding box annotations
         path = img_dict['file_name']
         # image_id = img_keys[i]
-        image = coco.loadImgs(image_id)[0]
+        image = coco.load_image(image_id)#[0]
+        h, w, c = image.shape
+        # print(f"image shape: {image.shape}")
         # image_name = os.path.join(args.img_root, image['file_name'])
         # image_name = imageid_to_path[image['file_name']]
         image_name = path
         # print(image_name)
         # print(f"filename: {image['file_name']}")
-        ann_ids = coco.getAnnIds(image_id)
+        # ann_ids = coco.getAnnIds(image_id)
+        ann_ids = coco.index.gid_to_aids[image_id]
 
         # print(f"image id: {image_id}, image_name: {image_name}")
         # make person bounding boxes
@@ -155,11 +159,16 @@ def main():
         for ann_id in ann_ids:
             person = {}
             ann = coco.anns[ann_id]
-            if ann['category_id'] != 41:
+            if 'label' in ann.keys():
+                if ann['label'] != 'patient':
+                    continue
+            else:
                 continue
-            print(f"ann: {ann}")
+            
+            # print(f"ann: {ann}")
             # bbox format is 'xywh'
             person['bbox'] = ann['bbox']
+            cat_id = ann['category_id']
             # bbox_score = ann['bbox_score']
             bbox_label = ann['label']
             person['label'] = bbox_label
@@ -180,13 +189,71 @@ def main():
             outputs=output_layer_names)
 
         if len(person_results)>0:
+            pose_keypoints = pose_results[0]['keypoints'].tolist()
+            keypoints_ann = {}
+            keypoints_ann['image_id'] = image_id
+            keypoints_ann['keypoints'] = pose_keypoints
+            # keypoints_ann['left_hand_offset'] = 
+            # keypoints_ann['right_hand_offset'] = 
+            # keypoints_ann['object_offset'] = 
+            keypoints_ann['category_id'] = cat_id
+            keypoints_ann['label'] = 'patient'
+            
+            # print(keypoints_ann)
+            
+            ann_ids = coco.index.gid_to_aids[image_id]
             for ann_id in ann_ids:
-                ann = coco.anns[ann_id]
-                # bbox format is 'xywh'
-                coco.anns[ann_id]['keypoints'] = pose_results[0]['keypoints'].tolist()
+                ann = coco.index.anns[ann_id]
+                # print(ann)
+                image_center = w//2
+                if ann['category_id'] == 0:
+                    bx, by, bw, bh = ann['bbox']
+                    hcx, hcy = bx+bw//2, by+by//w
+                    hand_point = np.array((hcx, hcy))
+                    offset_vector = []
+                    for joint in pose_keypoints:
+                        jx, jy, jc = joint
+                        joint_point = np.array((jx, jy))
+                        dist = np.linalg.norm(joint_point - hand_point)
+                        offset_vector.append(dist)
+                        
+                    # print(f"offset vector: {offset_vector}")
+                    if hcx <= image_center:
+                    # #     # hcx, hcy = bx+bw//2, by+by//w
+                        keypoints_ann['left_hand_offset'] = offset_vector
+                    elif hcx > image_center:
+                        keypoints_ann['right_hand_offset'] = offset_vector
+                elif ann['category_id'] in [1,2,3,4,5,6,7,8,9,10,11]:
+                    bx, by, bw, bh = ann['bbox']
+                    ocx, ocy = bx+bw//2, by+by//w
+                    object_point = np.array((ocx, ocy))
+                    offset_vector = []
+                    for joint in pose_keypoints:
+                        jx, jy, jc = joint
+                        joint_point = np.array((jx, jy))
+                        dist = np.linalg.norm(joint_point - object_point)
+                        offset_vector.append(dist)
+                    keypoints_ann['object_offset'] = offset_vector
+                    
+                    
+            coco.add_annotation(**keypoints_ann)
+            # print(ann_ids)
+            # for ann_id in ann_ids:
+            # ann = coco.anns[ann_id]
+            # bbox format is 'xywh'
+            ### add hands to joint offset vectors
+            ### add object to joint offst vectors
+            # print(f"ann: {ann}")
+            # print(f"pose results: {pose_results}")
+            
+            # coco.anns[ann_id]['keypoints'] = pose_results[0]['keypoints'].tolist()
+            
+            
+            
+                
                 # person_results.append(person)
         # person['keypoints'] = 
-        
+        pbar.set_description(f"Anns dataset: {len(coco.dataset['annotations'])}, orginal coco.ann: {original_num_annots}")
         # print(f"pose results: {pose_results[0]['keypoints'].tolist()}")
         # print(f"coco ann: {coco.anns[ann_id]}")
         # print(f"coco type: {type(coco)}")
@@ -199,8 +266,8 @@ def main():
             out_file = None
         else:
             os.makedirs(args.out_img_root, exist_ok=True)
-            # current_name = image_name.split('/')[-1]
-            current_name = image['file_name']
+            current_name = image_name.split('/')[-1]
+            # current_name = image['file_name']
             # out_file = os.path.join(args.out_img_root, f'vis_{i}.jpg')
             out_file = os.path.join(args.out_img_root, current_name)
 
@@ -218,8 +285,9 @@ def main():
         
         
     print(f"coco.dataset type: {type(coco.dataset)}")
-    with open(args.out_json_file, 'w') as json_file: 
-        json.dump(coco.dataset, json_file) 
+    # with open(args.out_json_file, 'w') as json_file: 
+    #     json.dump(coco.dataset, json_file) 
+    coco.dump(args.out_json_file, newline=True)
 
 
 if __name__ == '__main__':
