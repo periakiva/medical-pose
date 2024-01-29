@@ -16,7 +16,7 @@ from mmpose.datasets import DatasetInfo
 
 def dictionary_contents(path: str, types: list, recursive: bool = False) -> list:
     """
-    Extract files of specified types from directories, optionally recursively.
+    Extract files of specified types  from directories, optionally recursively.
 
     Parameters:
         path (str): Root directory path.
