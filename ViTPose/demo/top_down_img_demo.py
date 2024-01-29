@@ -90,12 +90,25 @@ def main():
         help='Link thickness for visualization')
 
     args = parser.parse_args()
-
+    save_intermediate = True
     assert args.show or (args.out_img_root != '')
 
     # coco = COCO(args.json_file)
     coco = kwcoco.CocoDataset(args.json_file)
 
+    keypoints_cats = [
+                        "nose", "mouth", "throat","chest","stomach","left_upper_arm",
+                        "right_upper_arm","left_lower_arm","right_lower_arm","left_wrist",
+                        "right_wrist","left_hand","right_hand","left_upper_leg",
+                        "right_upper_leg","left_knee","right_knee","left_lower_leg", 
+                        "right_lower_leg", "left_foot", "right_foot", "back"
+                    ]
+    
+    keypoints_cats_dset = [{'name': value, 'id': index} for index, value in enumerate(keypoints_cats)]
+    coco.dataset['keypoint_categories'] = keypoints_cats_dset
+    
+    # print(coco.dataset)
+    
     print(f"coco annotations: {len(coco.anns)}")
     # build the pose model from a config file and a checkpoint file
     # print(f"pose config: {args.pose_config}")
@@ -131,9 +144,9 @@ def main():
     output_layer_names = None
 
     # process each image
-    pbar = tqdm.tqdm(coco.imgs.items())
+    pbar = tqdm.tqdm(enumerate(coco.imgs.items()), total=len(list(coco.imgs.keys())))
     original_num_annots = len(coco.anns)
-    for image_id, img_dict in pbar:
+    for index, (image_id, img_dict) in pbar:
         
         # if i > 40:
         #     continue
@@ -189,15 +202,30 @@ def main():
             outputs=output_layer_names)
 
         if len(person_results)>0:
+            
+            # print(pose_results)
+            
             pose_keypoints = pose_results[0]['keypoints'].tolist()
+            bbox = pose_results[0]['bbox'].tolist()
+            pose_keypoints_list = []
+            
+            for index, keypoint in enumerate(pose_keypoints):
+                kp_dict = {'xy': [keypoint[0], keypoint[1]], 
+                           'keypoint_category_id': index, 
+                           'keypoint_category': keypoints_cats[index]}
+                pose_keypoints_list.append(kp_dict)
+            
             keypoints_ann = {}
             keypoints_ann['image_id'] = image_id
-            keypoints_ann['keypoints'] = pose_keypoints
             # keypoints_ann['left_hand_offset'] = 
             # keypoints_ann['right_hand_offset'] = 
             # keypoints_ann['object_offset'] = 
             keypoints_ann['category_id'] = cat_id
             keypoints_ann['label'] = 'patient'
+            keypoints_ann['bbox'] = bbox
+            keypoints_ann['keypoints'] = pose_keypoints_list
+            
+            
             
             # print(keypoints_ann)
             
@@ -234,8 +262,9 @@ def main():
                         dist = np.linalg.norm(joint_point - object_point)
                         offset_vector.append(dist)
                     keypoints_ann['object_offset'] = offset_vector
-                    
-                    
+                    keypoints_ann['object_offset_wrt'] = ann_id
+
+
             coco.add_annotation(**keypoints_ann)
             # print(ann_ids)
             # for ann_id in ann_ids:
@@ -283,11 +312,17 @@ def main():
             show=args.show,
             out_file=out_file)
         
+        if save_intermediate:
+            if index % 5000 == 1:
+                coco.dump(args.out_json_file, newlines=True)
+                print(f"saved intermediate at index {index}")
+
+        
         
     print(f"coco.dataset type: {type(coco.dataset)}")
     # with open(args.out_json_file, 'w') as json_file: 
     #     json.dump(coco.dataset, json_file) 
-    coco.dump(args.out_json_file, newline=True)
+    coco.dump(args.out_json_file, newlines=True)
 
 
 if __name__ == '__main__':
